@@ -1,0 +1,6 @@
+CREATE DATABASE vtapp;
+
+CREATE USER vtapp_user
+WITH PASSWORD 'vtapp123';
+
+GRANT CONNECT ON DATABASE vtapp TO vtapp_user;
