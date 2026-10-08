@@ -1,0 +1,82 @@
+POSTGRESQL DATABASE BACKUP AND RESTORE
+
+
+Database used for practice: mydb
+
+PostgreSQL user: vineettehlan
+
+
+1. CHECK DATABASE TABLES
+
+Connect to the database:
+
+psql -U vineettehlan -d mydb
+
+Check tables: \dt
+
+Exit: \q
+
+
+2. CREATE CUSTOM FORMAT BACKUP
+
+Create a custom-format backup of mydb: 
+
+pg_dump -U vineettehlan -d mydb -F c -f ~/Desktop/mydb.dump
+
+Check whether the backup file was created:
+
+ls -lh ~/Desktop/mydb.dump
+
+
+3. CREATE NEW DATABASE FOR RESTORATION
+
+Connect to an existing database:
+
+psql -U vineettehlan -d mydb
+
+Create the new database:
+
+CREATE DATABASE restored;
+
+Check databases: \l
+Exit: \q
+
+
+4. RESTORE CUSTOM BACKUP
+
+Restore mydb.dump into the restored database:
+
+pg_restore -U vineettehlan -d restored ~/Desktop/mydb.dump
+
+
+5. VERIFY RESTORED DATABASE
+
+Connect to restored database:
+
+psql -U vineettehlan -d restored
+
+Check tables: \dt
+
+Check data:
+
+SELECT * FROM users;
+
+Exit: \q
+
+
+6. CREATE PLAIN SQL BACKUP
+
+Create a plain SQL backup:
+
+pg_dump -U vineettehlan -d mydb -F p -f ~/Desktop/mydb.sql
+
+Check the backup file:
+
+ls -lh ~/Desktop/mydb.sql
+
+
+7. RESTORE PLAIN SQL BACKUP
+
+Restore the plain SQL backup using psql:
+
+psql -U vineettehlan -d restored < ~/Desktop/mydb.sql
