@@ -1,0 +1,30 @@
+POSTGRESQL CSV IMPORT - TERMINAL COMMANDS
+===================================================
+
+Database: campaign_db
+Table: subscribers
+File: /Users/vineettehlan/Downloads/email_subscribers.txt
+
+1. COMMANDS USED
+
+A. Import the file from the Mac into PostgreSQL (run inside psql):
+
+\copy subscribers(email, phone_number, city) FROM '/Users/vineettehlan/Downloads/email_subscribers.txt' WITH (FORMAT CSV, HEADER FALSE);
+
+Output:
+COPY 200
+
+B. Check how many records are in the table:
+
+SELECT COUNT(*) FROM subscribers;
+
+Output:
+ count
+-------
+   200
+(1 row)
+
+
+2. HOW TO CONNECT
+
+psql -U vineettehlan -d campaign_db
