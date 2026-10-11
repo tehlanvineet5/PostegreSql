@@ -1,0 +1,90 @@
+Q1.
+
+EXPLAIN shows the execution plan used by PostgreSQL to execute a query.
+
+cost = a..b: a = startup cost, b = total estimated cost.
+rows: Estimated number of rows returned.
+width: Estimated average size of each row in bytes.
+
+Common plan types:
+Seq Scan: Reads the entire table.
+Index Scan: Uses an index to find rows.
+Index Only Scan: Retrieves data directly from the index when possible.
+Nested Loop: Joins tables using repeated lookups.
+Hash Join: Uses a hash table to join tables.
+Merge Join: Joins sorted data.
+
+Filter: Condition applied to rows.
+Index Cond: Condition used to search an index.
+
+
+Q2.1
+
+The query performs a Seq Scan on the comments table. PostgreSQL estimates that almost the entire table needs to be scanned to find comments with user_id = 41.
+
+The rows value represents estimated output rows, not necessarily the number of rows scanned.
+
+
+Q2.2
+
+No, this query can be optimized by creating an index on user_id.
+
+CREATE INDEX idx_comments_user_id
+ON comments(user_id);
+
+EXPLAIN
+SELECT * FROM comments
+WHERE user_id = 41;
+
+PostgreSQL may use an Index Scan instead of a Seq Scan, reducing the number of rows examined.
+
+
+Q3.1
+
+We can create a composite index on the three columns used in the WHERE condition.
+
+CREATE INDEX idx_comments_object_user
+ON comments(commentable_type, commentable_id, user_id);
+
+This index helps PostgreSQL find comments for a particular Article or Photo made by a specific user.
+
+Since all conditions use equality, their order can be changed for this query. However, the order matters for queries using only some of these columns.
+
+
+Q4.1
+
+EXPLAIN
+SELECT e.*, d.*
+FROM employees e
+INNER JOIN departments d
+ON e.department_id = d.id;
+
+Example output:
+
+Hash Join (cost=1.14..15.60 rows=6 width=464)
+  Hash Cond: (d.id = e.department_id)
+  -> Seq Scan on departments d
+  -> Hash
+       -> Seq Scan on employees e
+
+Hash Join: Joins tables using a hash table.
+Hash Cond: Specifies the join condition.
+Seq Scan: Reads the table sequentially.
+cost: Estimated startup and total costs.
+rows: Estimated output rows.
+width: Estimated row size in bytes.
+
+EXPLAIN returns a plan tree with multiple nodes, not necessarily a single row.
+
+
+Q4.2
+
+EXPLAIN
+SELECT e.*, d.*
+FROM employees e,
+     (SELECT * FROM departments) d
+WHERE e.department_id = d.id;
+
+PostgreSQL may generate the same execution plan as the INNER JOIN query because it can optimize away this simple subquery.
+
+Both queries can have the same estimated cost and performance. The INNER JOIN version is preferable because it is easier to read and understand.
